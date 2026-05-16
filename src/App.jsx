@@ -678,7 +678,7 @@ export default function NovaAI() {
   const [memories, setMemories] = useState([
     {text:"The user is building a world-class AI chat app called Nova AI",ts:Date.now()-3600000},
   ]);
-  const [settings, setSettings] = useState({streaming:true,wordCount:true,timestamps:true,autoTitle:true,soundFx:false,responseStyle:"balanced"});
+  const [settings, setSettings] = useState({streaming:false,wordCount:true,timestamps:true,autoTitle:true,soundFx:false,responseStyle:"balanced"});
   const [showAgentBuilder, setShowAgentBuilder] = useState(false);
   const endRef = useRef(null);
   const abortRef = useRef(null);
