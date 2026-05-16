@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: nova-ai
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false          # you set this in Render dashboard
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: ALLOWED_ORIGINS
+        value: https://nova-ai.onrender.com
