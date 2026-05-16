@@ -732,33 +732,18 @@ export default function NovaAI() {
 
     try {
       abortRef.current=new AbortController();
-      const res=await fetch("https://api.anthropic.com/v1/messages",{
+      const res=await fetch("/api/chat",{
         method:"POST",headers:{"Content-Type":"application/json"},signal:abortRef.current.signal,
         body:JSON.stringify({
           model:mId,max_tokens:1500,
           system:buildSystem(ag),
           messages:history,
-          stream:settings.streaming,
         }),
       });
-
-      if(settings.streaming) {
-        const reader=res.body.getReader(); const dec=new TextDecoder(); let full="";
-        while(true){
-          const{done,value}=await reader.read(); if(done) break;
-          for(const line of dec.decode(value).split("\n")){
-            if(line.startsWith("data: ")){
-              const d=line.slice(6); if(d==="[DONE]") continue;
-              try{const j=JSON.parse(d);if(j.type==="content_block_delta"&&j.delta?.text){full+=j.delta.text;patchLast(convId,{content:full,streaming:true});}}catch{}
-            }
-          }
-        }
-        patchLast(convId,{content:full,streaming:false});
-      } else {
-        const data=await res.json();
-        const content=data.content?.map(b=>b.text||"").join("")||"";
-        patchLast(convId,{content,streaming:false});
-      }
+      const data=await res.json();
+      if(!res.ok) throw new Error(data.error||"API error");
+      const content=data.content?.map(b=>b.text||"").join("")||"";
+      patchLast(convId,{content,streaming:false});
     } catch(e) {
       if(e.name!=="AbortError") patchLast(convId,{content:"⚠️ Something went wrong. Please try again.",streaming:false});
     } finally { setLoading(false); }
